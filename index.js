@@ -17,7 +17,8 @@ async function  run(){
     try {
         await client.connect();
         const serviceCollection=client.db('online-store-client').collection('services');
-        const tServiceCollection=database.collection('tServices');
+        const buyingCollection=client.db('online-store-client').collection('buyings');
+        // const tServiceCollection=database.collection('tServices');
 
         app.get('/service', async(req, res)=>{
             const query={};
@@ -26,13 +27,29 @@ async function  run(){
             res.send(services);
             
         });
-        app.get('/tservice', async(req, res)=>{
-            const query={};
-            const cursor=tServiceCollection.find(query);
-            const tServices=await cursor.toArray();
-            res.send(tServices);
+
+        /** 
+        **api naming convention
+        **app.get('/'buying)//get all buying in this collection.or get more than one by filter
+        ****app.get('/'buying/:id)//get a specific buying
+        ****app.post('/'buying)//add a new buying 
+        ****app.patch('/'buying/:id)//update a new buying 
+        ****app.delete('/'buying/:id)//delete one buying 
+         */
+        // app.get('/tservice', async(req, res)=>{
+        //     const query={};
+        //     const cursor=tServiceCollection.find(query);
+        //     const tServices=await cursor.toArray();
+        //     res.send(tServices);
             
-        });
+        // });
+        app.post('/buying',async(req,res)=>{
+          const buying=req.body;
+          const query={buyNow:buying.Name,client:buying.client}
+          const result=await buyingCollection.insertOne(buying);
+          res.send(result);
+
+        })
     }
     finally{
 
